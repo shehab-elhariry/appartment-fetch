@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.core.min.js"></script>
+    <script
+    src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <title>olx appartmentSearch</title>
+    <style>
+        tr {
+            cursor: pointer;
+        }
+        .search
+         {
+            width: 60%;
+            margin: 10px 20%;
+        }
+        .loader-container {
+            position: fixed;
+            z-index: 2;
+            background-color: rgba(255, 255, 255, 0.945);
+            top: 0px;
+            left: 0px;
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            justify-content: center;
+            align-items: center
+        }
+
+        .loader-container img {
+            height: 100px;
+            width: 100px;;
+        }
+        .fetch {
+            width: 20%;
+        }
+        header {
+            background-color: rgb(52, 54, 63);
+            padding: 20px 20px;
+            text-align: right;
+        }
+
+        header * {
+            display: inline-block !important;
+        }
+        .pages {
+            width: 20%;
+            position: relative;
+            top: 3px;
+        }
+        .appartments {
+            color: white;
+            width: 50%;
+            text-align: left
+        }
+    </style>
+</head>
+<body>
+    <div class="loader-container">
+        <img src="loader.gif" alt="loader">
+    </div>
+    <header>
+        <span class="appartments">Total Number: <span class="appartments-count"></span> </span>    
+        <input type="number" class="pages form-control" placeholder="Number of pages to scrap">
+        <button class="fetch btn btn-primary">Refresh</button>
+    </header>
+    <div class="form-group">
+        <input type="search" class="form-control search" placeholder="Search in location or title">
+    </div>
+    <div class="container">
+        <div class="row">
+                <div class="col-xs-9">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Location</th>
+                                    <th>date</th>
+                                    <th>Link</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                </div>
+                <div class="col-xs-3" style="position: fixed; right: 100px; top: 150px;">
+                    <img src="" alt="preview" id="preview">
+                </div>  
+        </div>
+    </div>
+</body>
+<script >
+    function getAppartments (searchQuery) {
+        axios.get('http://localhost:3000/data').then(resp => {
+        var appartments = _.flatten(resp.data.data)
+        if (searchQuery) {
+            appartments = _.filter(appartments, 
+            appartment => 
+            (appartment.title.includes(searchQuery) || 
+            appartment.location.toLowerCase().includes(searchQuery.toLowerCase()))  
+            )
+        }
+        $('.appartments-count').html(appartments.length)
+        _.forEach(appartments, appartment => {
+                var newAppartmentRow = $(`<tr image="${appartment.image.replace('644x461', '230x230')}">`);
+
+                newAppartmentRow.on('mouseenter', function (e) {
+                    $('#preview').attr('src', $(this).attr('image'));
+                })
+
+                var newAppartmentTitle = $('<td>')
+                var newAppartmentLocation = $('<td>')
+                var newAppartmentLink = $('<td>')
+                var newAppartmentDate = $('<td>')
+
+                newAppartmentTitle.html(appartment.title);
+                newAppartmentLocation.html(appartment.location);
+                newAppartmentDate.html(appartment.date);
+                newAppartmentLink.html(`<a target="_blank" href="${appartment.link}">Show</a>`);
+
+                newAppartmentRow.append(newAppartmentTitle)
+                newAppartmentRow.append(newAppartmentLocation)
+                newAppartmentRow.append(newAppartmentDate)
+                newAppartmentRow.append(newAppartmentLink)
+
+                $('tbody').append(newAppartmentRow);
+            })
+            $('.loader-container').css('display', 'none')
+        })
+    }
+    function fetchNewAppartments () {
+        $('.loader-container').css('display', 'flex')
+        var endpoint = $('.pages').val()? `fetch?pages=${ $('.pages').val()}`: 'fetch'
+        axios.get('http://localhost:3000/' + endpoint).then(resp => {
+            getAppartments();
+        })
+    }
+    $(function () {
+        getAppartments();
+        $('.search').on('keyup', function () {
+            $('tbody').empty();
+            getAppartments($(this).val());
+        });
+        $('.fetch').on('click', fetchNewAppartments)
+    })    
+</script>
+</html>
