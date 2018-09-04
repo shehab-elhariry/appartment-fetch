@@ -95,8 +95,10 @@
     </div>
 </body>
 <script >
+    // local : http://localhost:3000/data
+    // https://olx-appartment-fetch.herokuapp.com/data
     function getAppartments (searchQuery) {
-        axios.get('http://localhost:3000/data').then(resp => {
+        axios.get('https://olx-appartment-fetch.herokuapp.com/data').then(resp => {
         var appartments = _.flatten(resp.data.data)
         if (searchQuery) {
             appartments = _.filter(appartments, 
@@ -136,7 +138,7 @@
     function fetchNewAppartments () {
         $('.loader-container').css('display', 'flex')
         var endpoint = $('.pages').val()? `fetch?pages=${ $('.pages').val()}`: 'fetch'
-        axios.get('http://localhost:3000/' + endpoint).then(resp => {
+        axios.get('https://olx-appartment-fetch.herokuapp.com/' + endpoint).then(resp => {
             getAppartments();
         })
     }
