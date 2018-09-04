@@ -65,7 +65,10 @@ app.get('/fetch', (req, res) => {
   
 })
 
-app.listen(3000, () => console.log('Example app listening on port 3000!'))
+const PORT = process.env.PORT
+
+app.listen(PORT)
+// app.listen(3000, () => console.log('Example app listening on port 3000!'))
 
 // var filteredlocations  = [];
 // var s;
