@@ -59,6 +59,9 @@
             width: 50%;
             text-align: left
         }
+        .no-alex {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -72,6 +75,12 @@
     </header>
     <div class="form-group">
         <input type="search" class="form-control search" placeholder="Search in location or title">
+    </div>
+    <div class="no-alex form-group">
+        <label for="">
+            No 'Alexandria'
+        </label>    
+        <input type="checkbox" name="" id="no-alexandria">
     </div>
     <div class="container">
         <div class="row">
@@ -97,8 +106,9 @@
 <script >
     // local : http://localhost:3000/data
     // https://olx-appartment-fetch.herokuapp.com/data
-    function getAppartments (searchQuery) {
+    function getAppartments (searchQuery, noAlex) {
         axios.get('https://olx-appartment-fetch.herokuapp.com/data').then(resp => {
+        // axios.get('http://localhost:3000/data').then(resp => {
         var appartments = _.flatten(resp.data.data)
         if (searchQuery) {
             appartments = _.filter(appartments, 
@@ -107,6 +117,11 @@
             appartment.location.toLowerCase().includes(searchQuery.toLowerCase()))  
             )
         }
+        
+        if (noAlex) {
+            appartments = _.filter(appartments, appartment => appartment.location != 'Alexandria');
+        }
+
         $('.appartments-count').html(appartments.length)
         _.forEach(appartments, appartment => {
                 var newAppartmentRow = $(`<tr image="${appartment.image.replace('644x461', '230x230')}">`);
@@ -139,6 +154,7 @@
         $('.loader-container').css('display', 'flex')
         var endpoint = $('.pages').val()? `fetch?pages=${ $('.pages').val()}`: 'fetch'
         axios.get('https://olx-appartment-fetch.herokuapp.com/' + endpoint).then(resp => {
+        // axios.get('http://localhost:3000/' + endpoint).then(resp => {
             getAppartments();
         })
     }
@@ -149,6 +165,10 @@
             getAppartments($(this).val());
         });
         $('.fetch').on('click', fetchNewAppartments)
+        $('#no-alexandria').on('change', function () {
+            $('tbody').empty();
+            getAppartments('', $(this)[0].checked)
+        })
     })    
 </script>
 </html>

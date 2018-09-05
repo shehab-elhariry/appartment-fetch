@@ -64,6 +64,7 @@ app.get('/fetch', (req, res) => {
 })
 
 const PORT = process.env.PORT
-
 app.listen(PORT)
+
+//local
 // app.listen(3000, () => console.log('Example app listening on port 3000!'))
