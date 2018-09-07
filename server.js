@@ -34,7 +34,13 @@ app.get('/fetch', (req, res) => {
     .then(($) => {
     var locations = [];
       $('.ads__item__location').each(function (i, elem) {
-      locations.push({'location': elem.children[0].data.replace(/\r?\n|\r|\t/g, ''), locationID: i, link: elem.parent.parent.children[0].next.attribs.href, title: elem.parent.parent.children[0].next.attribs.title, date: elem.prev.prev.children[0].data.replace(/\r?\n|\r|\t/g, ''), image: elem.parent.parent.prev.prev.children[1].attribs.src });
+      locations.push({
+         location: elem.children[0].data.replace(/\r?\n|\r|\t/g, ''),
+         locationID: i,
+         link: elem.parent.parent.children[0].next.attribs.href,
+         title: elem.parent.parent.children[0].next.attribs.title,
+         date: elem.prev.prev.children[0].data.replace(/\r?\n|\r|\t/g, ''),
+         image: elem.parent.parent.prev.prev.children[1].attribs.src });
       })
 
       var filteredPageLocations = locations.filter(function (i, e) { 
